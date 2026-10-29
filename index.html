@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CapCut Account Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --bg-main: #0a1128;
+            --bg-glass: rgba(16, 25, 43, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --neon-primary: #0088ff;
+            --neon-secondary: #00e5ff;
+            --text-main: #ffffff;
+            --text-muted: #8b9bb4;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-main);
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(0, 136, 255, 0.10) 0%, transparent 40%),
+                radial-gradient(circle at 85% 30%, rgba(0, 229, 255, 0.08) 0%, transparent 40%);
+            color: var(--text-main);
+            overflow-x: hidden;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-main); }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(0, 229, 255, 0.5); }
+
+        .glass-panel {
+            background: var(--bg-glass);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+        
+        .glass-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px -10px rgba(0, 229, 255, 0.15);
+        }
+
+        .neon-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--glass-border);
+            outline: none;
+            padding: 1rem 1rem 1rem 3rem;
+            color: var(--text-main);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .neon-input::placeholder { color: var(--text-muted); }
+
+        .neon-input:focus {
+            border-color: var(--neon-secondary);
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.15), inset 0 0 10px rgba(0, 229, 255, 0.05);
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .input-icon-wrapper { position: relative; }
+        .input-icon {
+            position: absolute;
+            left: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.25rem;
+            pointer-events: none;
+            transition: color 0.3s;
+        }
+
+        .folder-card { border: 1px solid var(--glass-border); }
+        .active-folder {
+            border-color: var(--neon-secondary) !important;
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.15), inset 0 0 10px rgba(0, 229, 255, 0.05) !important;
+            background: rgba(0, 229, 255, 0.05) !important;
+        }
+
+        select.neon-input {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b9bb4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1em;
+        }
+
+        #toast-container { position: fixed; bottom: 90px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast {
+            padding: 12px 24px; border-radius: 12px; background: var(--bg-glass); backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border); border-left: 4px solid var(--neon-primary); color: white;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3); animation: slideIn 0.3s ease forwards, fadeOut 0.3s ease 2.7s forwards;
+            display: flex; align-items: center; gap: 8px;
+        }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+
+        .glow-orb { position: absolute; border-radius: 50%; filter: blur(90px); z-index: -1; pointer-events: none; }
+        .nav-btn.active-nav i, .nav-btn.active-nav span { color: var(--neon-secondary) !important; }
+    </style>
+</head>
+<body>
+
+    <div id="toast-container"></div>
+
+    <div class="glow-orb bg-blue-600/10 w-96 h-96 top-0 left-0 fixed"></div>
+    <div class="glow-orb bg-cyan-500/10 w-80 h-80 bottom-0 right-0 fixed"></div>
+
+    <div id="main-view" class="min-h-screen flex relative z-10">
+        
+        <!-- SIDEBAR DESKTOP -->
+        <aside class="hidden md:flex flex-col justify-between w-64 min-h-screen bg-[#10192b]/50 backdrop-blur-xl border-r border-white/5 p-6 fixed left-0 top-0">
+            <div>
+                <div class="brand flex items-center gap-3 mb-10 pl-2">
+                    <div class="w-10 h-10 rounded-xl glass-card flex items-center justify-center border-cyan-500/30 shadow-[0_0_15px_rgba(0,229,255,0.2)]">
+                        <i class="ph-fill ph-lock-key text-2xl text-cyan-400"></i>
+                    </div>
+                    <h2 class="font-bold text-xl text-white tracking-wide">Akun<span class="text-cyan-400">Ku</span></h2>
+                </div>
+
+                <div class="space-y-2">
+                    <button onclick="switchTab('dashboard')" class="nav-btn w-full flex items-center p-2 rounded-2xl transition-all hover:bg-white/5 active-nav group" data-target="dashboard">
+                        <div class="w-11 h-11 rounded-xl bg-white/5 flex items-center justify-center text-slate-400 group-[.active-nav]:text-cyan-400 group-[.active-nav]:bg-cyan-500/20 group-[.active-nav]:shadow-[inset_0_0_15px_rgba(34,211,238,0.2)] shrink-0 transition-all">
+                            <i class="ph-fill ph-house text-xl"></i>
+                        </div>
+                        <span class="ml-4 font-semibold text-slate-400 group-[.active-nav]:text-white text-sm">Beranda</span>
+                    </button>
+
+                    <button onclick="switchTab('settings')" class="nav-btn w-full flex items-center p-2 rounded-2xl transition-all hover:bg-white/5 group" data-target="settings">
+                        <div class="w-11 h-11 rounded-xl bg-white/5 flex items-center justify-center text-slate-400 group-[.active-nav]:text-cyan-400 group-[.active-nav]:bg-cyan-500/20 group-[.active-nav]:shadow-[inset_0_0_15px_rgba(34,211,238,0.2)] shrink-0 transition-all">
+                            <i class="ph-fill ph-gear text-xl"></i>
+                        </div>
+                        <span class="ml-4 font-semibold text-slate-400 group-[.active-nav]:text-white text-sm">Pengaturan</span>
+                    </button>
+                </div>
+            </div>
+
+            <div>
+                <button onclick="switchTab('add')" class="nav-btn w-full bg-cyan-500 hover:bg-cyan-400 text-[#0a1128] font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all shadow-[0_0_20px_rgba(34,211,238,0.4)] group" data-target="add">
+                    <i class="ph-bold ph-plus text-xl transition-transform group-hover:rotate-90"></i>
+                    <span>Tambah Akun</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- KONTEN UTAMA -->
+        <main id="main-content" class="md:ml-64 flex-1 p-5 pb-28 md:p-8 w-full">
+            
+            <header class="flex justify-between items-center mb-8">
+                <div>
+                    <p class="text-sm text-slate-400">Halo,</p>
+                    <h2 id="page-title" class="text-2xl font-bold text-white">Selamat datang! 👋</h2>
+                </div>
+            </header>
+
+            <!-- TAB: Dashboard -->
+            <div id="view-dashboard" class="view-section space-y-6">
+                <div class="input-icon-wrapper mb-4">
+                    <i class="ph ph-magnifying-glass input-icon text-sm"></i>
+                    <input type="text" id="search-input" placeholder="Cari akun, kategori, atau username..." class="neon-input glass-panel border-none shadow-none py-3 text-sm">
+                </div>
+
+                <div>
+                    <h3 class="text-base font-semibold text-slate-300 mb-3">Kategori Folder</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+                        <div id="folder-all" onclick="selectFolder('all')" class="folder-card active-folder cursor-pointer glass-card p-3 md:p-4 flex flex-col gap-2 transition-all hover:bg-white/5">
+                            <div class="flex justify-between items-start">
+                                <i class="ph-fill ph-folder-open text-2xl text-cyan-400"></i>
+                                <span id="count-all" class="text-xs font-bold bg-white/10 text-slate-300 px-2 py-0.5 rounded-md">0</span>
+                            </div>
+                            <div><h4 class="text-sm font-semibold text-white tracking-wide">Semua Akun</h4></div>
+                        </div>
+
+                        <div id="folder-baru" onclick="selectFolder('baru')" class="folder-card cursor-pointer glass-card p-3 md:p-4 flex flex-col gap-2 transition-all hover:bg-white/5">
+                            <div class="flex justify-between items-start">
+                                <i class="ph-fill ph-folder text-2xl text-cyan-500"></i>
+                                <span id="count-baru" class="text-xs font-bold bg-white/10 text-slate-300 px-2 py-0.5 rounded-md">0</span>
+                            </div>
+                            <div><h4 class="text-sm font-semibold text-white tracking-wide">Akun Baru</h4></div>
+                        </div>
+
+                        <div id="folder-budy" onclick="selectFolder('budy')" class="folder-card cursor-pointer glass-card p-3 md:p-4 flex flex-col gap-2 transition-all hover:bg-white/5">
+                            <div class="flex justify-between items-start">
+                                <i class="ph-fill ph-folder text-2xl text-cyan-500"></i>
+                                <span id="count-budy" class="text-xs font-bold bg-white/10 text-slate-300 px-2 py-0.5 rounded-md">0</span>
+                            </div>
+                            <div><h4 class="text-sm font-semibold text-white tracking-wide">Akun Budy</h4></div>
+                        </div>
+
+                        <div id="folder-partner" onclick="selectFolder('partner')" class="folder-card cursor-pointer glass-card p-3 md:p-4 flex flex-col gap-2 transition-all hover:bg-white/5">
+                            <div class="flex justify-between items-start">
+                                <i class="ph-fill ph-folder text-2xl text-cyan-500"></i>
+                                <span id="count-partner" class="text-xs font-bold bg-white/10 text-slate-300 px-2 py-0.5 rounded-md">0</span>
+                            </div>
+                            <div><h4 class="text-sm font-semibold text-white tracking-wide">Akun Partner</h4></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-4 mt-4 border-t border-white/10">
+                    <h3 id="list-title" class="text-lg font-bold text-white mb-4">Semua Akun</h3>
+                    <div id="dashboard-account-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4"></div>
+                    <div id="dashboard-empty-state" class="hidden glass-panel p-10 mt-4 text-center border-dashed border-white/20">
+                        <i class="ph ph-folder-dashed text-5xl text-slate-500 mb-3 block"></i>
+                        <p class="text-slate-400 font-medium">Belum ada akun di folder ini.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: Tambah Akun -->
+            <div id="view-add" class="view-section hidden max-w-xl mx-auto mt-4 relative z-20">
+                <div class="glass-panel p-6 md:p-8 border border-white/5 relative z-20">
+                    <div class="flex items-center gap-4 mb-8 border-b border-white/10 pb-6">
+                        <div class="w-8 h-8 rounded-full bg-cyan-400 flex items-center justify-center">
+                            <i class="ph-bold ph-plus text-[#0a1128] text-lg"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white tracking-wide">Tambah Akun</h3>
+                    </div>
+                    
+                    <form id="add-account-form" class="space-y-6">
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-slate-300 ml-1">Kategori</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <i class="ph ph-tag text-slate-400 text-lg"></i>
+                                </div>
+                                <select id="acc-category" class="w-full bg-black/30 text-white border border-white/5 rounded-2xl py-4 pl-12 pr-4 appearance-none focus:outline-none focus:ring-1 focus:ring-cyan-500 transition-all shadow-inner" required>
+                                    <option value="" disabled selected class="text-slate-500">Pilih Kategori...</option>
+                                    <option value="baru">Akun Baru</option>
+                                    <option value="budy">Akun Budy</option>
+                                    <option value="partner">Akun Partner</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-slate-300 ml-1">Username / Email</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <i class="ph ph-at text-slate-400 text-lg"></i>
+                                </div>
+                                <input type="text" id="acc-username" required placeholder="Contoh: user@email.com" class="w-full bg-black/30 text-white border border-white/5 rounded-2xl py-4 pl-12 pr-4 focus:outline-none focus:ring-1 focus:ring-cyan-500 shadow-inner">
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-slate-300 ml-1">Password</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <i class="ph ph-key text-slate-400 text-lg"></i>
+                                </div>
+                                <input type="text" id="acc-password" required placeholder="Masukkan password" class="w-full bg-black/30 text-white border border-white/5 rounded-2xl py-4 pl-12 pr-4 focus:outline-none focus:ring-1 focus:ring-cyan-500 shadow-inner">
+                            </div>
+                        </div>
+
+                        <div class="pt-6 relative z-30">
+                            <button type="button" id="btn-simpan" class="w-full bg-cyan-500 hover:bg-cyan-400 text-[#0a1128] font-bold text-lg rounded-2xl py-4 transition-all shadow-[0_0_15px_rgba(34,211,238,0.4)] flex items-center justify-center gap-2 cursor-pointer">
+                                Simpan Akun
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- TAB: Pengaturan -->
+            <div id="view-settings" class="view-section hidden max-w-xl mx-auto mt-4 relative z-20">
+                <div class="glass-panel p-6 md:p-8 border border-white/5 relative z-20">
+                    <div class="flex items-center gap-4 mb-8 border-b border-white/10 pb-6">
+                        <div class="w-8 h-8 rounded-full bg-cyan-400 flex items-center justify-center">
+                            <i class="ph-bold ph-gear text-[#0a1128] text-lg"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white tracking-wide">Pengaturan</h3>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div>
+                            <h4 class="text-lg font-semibold text-slate-300 mb-4">Backup & Export Data</h4>
+                            <div class="grid grid-cols-1 gap-3">
+                                <button id="btn-export-json" class="glass-card p-4 flex items-center justify-between hover:bg-white/5 transition group w-full text-left">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-10 h-10 rounded-xl bg-yellow-500/20 text-yellow-400 flex items-center justify-center"><i class="ph-fill ph-file-code text-xl"></i></div>
+                                        <div>
+                                            <h5 class="font-bold text-white">Export ke JSON</h5>
+                                            <p class="text-xs text-slate-400">Format data mentah</p>
+                                        </div>
+                                    </div>
+                                    <i class="ph-bold ph-download-simple text-slate-500"></i>
+                                </button>
+
+                                <button id="btn-export-csv" class="glass-card p-4 flex items-center justify-between hover:bg-white/5 transition group w-full text-left">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-10 h-10 rounded-xl bg-green-500/20 text-green-400 flex items-center justify-center"><i class="ph-fill ph-file-csv text-xl"></i></div>
+                                        <div>
+                                            <h5 class="font-bold text-white">Export ke Excel / CSV</h5>
+                                            <p class="text-xs text-slate-400">Buka di spreadsheet</p>
+                                        </div>
+                                    </div>
+                                    <i class="ph-bold ph-download-simple text-slate-500"></i>
+                                </button>
+
+                                <button id="btn-export-pdf" class="glass-card p-4 flex items-center justify-between hover:bg-white/5 transition group w-full text-left">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-10 h-10 rounded-xl bg-red-500/20 text-red-400 flex items-center justify-center"><i class="ph-fill ph-file-pdf text-xl"></i></div>
+                                        <div>
+                                            <h5 class="font-bold text-white">Export ke PDF</h5>
+                                            <p class="text-xs text-slate-400">Format dokumen rapih</p>
+                                        </div>
+                                    </div>
+                                    <i class="ph-bold ph-download-simple text-slate-500"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="pt-6 border-t border-white/10">
+                            <h4 class="text-lg font-semibold text-slate-300 mb-4">Pemulihan Data (Restore)</h4>
+                            <input type="file" id="import-json-file" accept=".json" class="hidden">
+                            <button id="btn-import-json" class="glass-card p-4 flex items-center justify-between hover:bg-white/5 transition group w-full text-left">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center"><i class="ph-fill ph-upload-simple text-xl"></i></div>
+                                    <div>
+                                        <h5 class="font-bold text-white">Pulihkan dari JSON</h5>
+                                        <p class="text-xs text-slate-400">Upload file backup JSON</p>
+                                    </div>
+                                </div>
+                                <i class="ph-bold ph-arrow-line-up text-slate-500"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- NAVIGASI MOBILE BAWAH -->
+    <nav class="md:hidden fixed bottom-0 left-0 w-full h-[72px] bg-[#0d1533]/90 backdrop-blur-xl border-t border-white/10 flex justify-around items-center px-4 z-50 rounded-t-3xl pb-1">
+        <button onclick="switchTab('dashboard')" class="nav-btn active-nav flex flex-col items-center gap-1 min-w-[64px]" data-target="dashboard">
+            <i class="ph-fill ph-house text-2xl text-slate-500"></i>
+            <span class="text-[10px] font-semibold text-slate-500">Beranda</span>
+        </button>
+
+        <div class="relative -top-6">
+            <button onclick="switchTab('add')" class="nav-btn flex flex-col items-center justify-center w-14 h-14 bg-cyan-500 rounded-full text-[#0a1128] shadow-[0_8px_25px_rgba(34,211,238,0.6)] border-[6px] border-[#0a1128]" data-target="add">
+                <i class="ph-bold ph-plus text-2xl"></i>
+            </button>
+        </div>
+
+        <button onclick="switchTab('settings')" class="nav-btn flex flex-col items-center gap-1 min-w-[64px]" data-target="settings">
+            <i class="ph-fill ph-gear text-2xl text-slate-500"></i>
+            <span class="text-[10px] font-semibold text-slate-500">Pengaturan</span>
+        </button>
+    </nav>
+
+    <!-- FIREBASE & LOGIKA APLIKASI -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getDatabase, ref, push, set, onValue, remove } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAfeS-CfSNi5GXOTCy2yTu0frn3VEP2QRE",
+            authDomain: "capcutmanager-eb20b.firebaseapp.com",
+            databaseURL: "https://capcutmanager-eb20b-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "capcutmanager-eb20b",
+            storageBucket: "capcutmanager-eb20b.firebasestorage.app",
+            messagingSenderId: "537394832897",
+            appId: "1:537394832897:web:9fe2cdcc1d31f016b2c200",
+            measurementId: "G-3BH1VWPH96"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        let currentUser = null;
+        let accountsData = [];
+        let currentFilter = 'all';
+        let searchQuery = '';
+
+        window.showToast = (message, type = 'info') => {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            let icon = 'ph-info';
+            if(type === 'success') icon = 'ph-check-circle text-green-500';
+            else if(type === 'error') icon = 'ph-warning-circle text-red-500';
+            toast.innerHTML = `<i class="ph-fill ${icon} text-xl"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        async function startApp() {
+            try {
+                const userCredential = await signInAnonymously(auth);
+                currentUser = userCredential.user;
+                setupRealtimeListener();
+            } catch (error) {
+                console.error("Connection Error:", error);
+                showToast("Gagal terhubung ke database.", "error");
+            }
+        }
+
+        function setupRealtimeListener() {
+            if (!currentUser) return; 
+            const accountsRef = ref(db, `users/${currentUser.uid}/capcut_accounts`);
+
+            onValue(accountsRef, (snapshot) => {
+                accountsData = [];
+                snapshot.forEach((childSnapshot) => {
+                    accountsData.push({ id: childSnapshot.key, ...childSnapshot.val() });
+                });
+                renderAllViews();
+            }, (error) => {
+                console.error("Database Error:", error);
+                showToast("Gagal sinkronisasi data.", "error");
+            });
+        }
+
+        document.getElementById('btn-simpan').addEventListener('click', async () => {
+            if (!currentUser) {
+                showToast("Menunggu koneksi database...", "error");
+                return;
+            }
+
+            const username = document.getElementById('acc-username').value;
+            const password = document.getElementById('acc-password').value;
+            const category = document.getElementById('acc-category').value;
+            const btn = document.getElementById('btn-simpan');
+
+            if(!username || !password || !category) {
+                showToast("Mohon lengkapi semua data", "error");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = `<i class="ph ph-spinner animate-spin text-xl"></i> Menyimpan...`;
+
+            try {
+                const accountsRef = ref(db, `users/${currentUser.uid}/capcut_accounts`);
+                const newDocRef = push(accountsRef);
+                await set(newDocRef, {
+                    username: username,
+                    password: password,
+                    category: category,
+                    createdAt: new Date().toISOString()
+                });
+
+                showToast("Akun berhasil disimpan!", "success");
+                document.getElementById('add-account-form').reset();
+                selectFolder(category);
+                switchTab('dashboard');
+            } catch (error) {
+                showToast("Gagal menyimpan akun.", "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `Simpan Akun`;
+            }
+        });
+
+        window.deleteAccount = async (docId) => {
+            if (!currentUser) return;
+            try {
+                const docRef = ref(db, `users/${currentUser.uid}/capcut_accounts/${docId}`);
+                await remove(docRef);
+                showToast("Akun berhasil dihapus", "success");
+            } catch (error) {
+                showToast("Gagal menghapus akun", "error");
+            }
+        }
+
+        window.togglePassword = (btn, originalPassword) => {
+            const container = btn.parentElement;
+            const pwdText = container.querySelector('.password-display');
+            const icon = btn.querySelector('i');
+            
+            if (pwdText.innerText === '••••••••••') {
+                pwdText.innerText = originalPassword;
+                icon.classList.replace('ph-eye', 'ph-eye-slash');
+            } else {
+                pwdText.innerText = '••••••••••';
+                icon.classList.replace('ph-eye-slash', 'ph-eye');
+            }
+        };
+
+        window.copyToClipboard = (text) => {
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            try {
+                document.execCommand('copy');
+                showToast("Tersalin ke clipboard!", "success");
+            } catch (err) {
+                showToast("Gagal menyalin", "error");
+            }
+            document.body.removeChild(el);
+        };
+
+        const searchInput = document.getElementById('search-input');
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                searchQuery = e.target.value.toLowerCase();
+                renderDashboardList();
+            });
+        }
+
+        window.switchTab = (tabName) => {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active-nav'));
+
+            const targetView = document.getElementById(`view-${tabName}`);
+            if(targetView) targetView.classList.remove('hidden');
+            
+            document.querySelectorAll(`.nav-btn[data-target="${tabName}"]`).forEach(el => el.classList.add('active-nav'));
+
+            const titles = { 'dashboard': 'Selamat datang! 👋', 'add': 'Tambah Akun', 'settings': 'Pengaturan Sistem' };
+            const pageTitleEl = document.getElementById('page-title');
+            if(pageTitleEl) pageTitleEl.innerText = titles[tabName] || '';
+            
+            if(tabName === 'dashboard') renderAllViews();
+        };
+
+        window.selectFolder = (folderId) => {
+            currentFilter = folderId;
+            document.querySelectorAll('.folder-card').forEach(el => {
+                el.classList.remove('active-folder');
+                const icon = el.querySelector('i');
+                icon.classList.replace('ph-folder-open', 'ph-folder');
+            });
+            
+            const activeFolderEl = document.getElementById(`folder-${folderId}`);
+            if (activeFolderEl) {
+                activeFolderEl.classList.add('active-folder');
+                activeFolderEl.querySelector('i').classList.replace('ph-folder', 'ph-folder-open');
+            }
+
+            const folderNames = { 'all': 'Semua Akun', 'baru': 'Akun Baru', 'budy': 'Akun Budy', 'partner': 'Akun Partner' };
+            document.getElementById('list-title').innerText = folderNames[folderId];
+            renderDashboardList();
+        }
+
+        function renderAllViews() {
+            const counts = {
+                'all': accountsData.length,
+                'baru': accountsData.filter(a => a.category === 'baru').length,
+                'budy': accountsData.filter(a => a.category === 'budy').length,
+                'partner': accountsData.filter(a => a.category === 'partner').length
+            };
+
+            for (const [key, value] of Object.entries(counts)) {
+                const countEl = document.getElementById(`count-${key}`);
+                if (countEl) countEl.innerText = value;
+            }
+
+            renderDashboardList();
+        }
+
+        function renderDashboardList() {
+            const container = document.getElementById('dashboard-account-list');
+            const emptyState = document.getElementById('dashboard-empty-state');
+            if(!container || !emptyState) return;
+
+            let filteredData = accountsData;
+            if (currentFilter !== 'all') {
+                filteredData = filteredData.filter(a => a.category === currentFilter);
+            }
+
+            if (searchQuery) {
+                filteredData = filteredData.filter(a => 
+                    (a.username && a.username.toLowerCase().includes(searchQuery)) ||
+                    (a.category && a.category.toLowerCase().includes(searchQuery))
+                );
+            }
+
+            container.innerHTML = ''; 
+
+            if (filteredData.length === 0) {
+                container.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            container.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+
+            filteredData.forEach(account => {
+                const card = document.createElement('div');
+                card.className = 'glass-card p-4 flex flex-col gap-3 relative group';
+                
+                let accentColor = 'text-blue-400'; let bgAccent = 'bg-blue-500/20';
+                if (account.category === 'budy') { accentColor = 'text-purple-400'; bgAccent = 'bg-purple-500/20'; } 
+                else if (account.category === 'partner') { accentColor = 'text-green-400'; bgAccent = 'bg-green-500/20'; } 
+                else if (account.category === 'baru') { accentColor = 'text-yellow-400'; bgAccent = 'bg-yellow-500/20'; }
+
+                card.innerHTML = `
+                    <button onclick="deleteAccount('${account.id}')" class="absolute top-3 right-3 w-7 h-7 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 hover:bg-red-500 hover:text-white transition-colors opacity-100 md:opacity-0 md:group-hover:opacity-100 z-10">
+                        <i class="ph ph-trash text-sm"></i>
+                    </button>
+                    <div class="flex items-center gap-3 border-b border-white/10 pb-2 pr-8">
+                        <div class="w-8 h-8 rounded-lg ${bgAccent} flex items-center justify-center ${accentColor} border border-white/5">
+                            <i class="ph-fill ph-google-logo text-base"></i>
+                        </div>
+                        <div class="overflow-hidden">
+                            <p class="font-bold text-white truncate text-sm leading-tight">${account.username.split('@')[0]}</p>
+                            <p class="text-[9px] font-medium text-slate-400 uppercase tracking-wider mt-0.5 truncate">${account.username}</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center pt-1">
+                        <div class="flex-1 overflow-hidden pr-2 flex items-center gap-2">
+                            <p class="font-mono text-base text-slate-300 truncate translate-y-0.5 password-display">••••••••••</p>
+                            <button onclick="togglePassword(this, '${account.password.replace(/'/g, "\\'")}')" class="text-slate-400 hover:text-cyan-400 p-1">
+                                <i class="ph ph-eye text-lg"></i>
+                            </button>
+                        </div>
+                        <button onclick="copyToClipboard('${account.password.replace(/'/g, "\\'")}')" class="px-2 py-1.5 text-xs font-semibold text-cyan-400 bg-cyan-500/10 rounded-md border border-cyan-500/20 flex items-center gap-1">
+                            <i class="ph-bold ph-copy text-xs"></i> Salin
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function downloadFile(content, fileName, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        document.getElementById('btn-export-json').addEventListener('click', () => {
+            if (accountsData.length === 0) return showToast("Tidak ada data", "error");
+            downloadFile(JSON.stringify(accountsData, null, 2), 'backup_akun.json', 'application/json');
+            showToast("Berhasil export ke JSON", "success");
+        });
+
+        document.getElementById('btn-export-csv').addEventListener('click', () => {
+            if (accountsData.length === 0) return showToast("Tidak ada data", "error");
+            let csvContent = "Kategori,Username/Email,Password\n";
+            accountsData.forEach(acc => {
+                const esc = (s) => '"' + (s ? String(s).replace(/"/g, '""') : '') + '"';
+                csvContent += [esc(acc.category), esc(acc.username), esc(acc.password)].join(',') + "\n";
+            });
+            downloadFile("\uFEFF" + csvContent, 'backup_akun.csv', 'text/csv;charset=utf-8;');
+            showToast("Berhasil export ke CSV", "success");
+        });
+
+        document.getElementById('btn-export-pdf').addEventListener('click', () => {
+            if (accountsData.length === 0) return showToast("Tidak ada data", "error");
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFontSize(16); doc.text("Backup Data Akun - AkunKu", 14, 20);
+            const rows = accountsData.map(acc => [acc.category.toUpperCase(), acc.username, acc.password]);
+            doc.autoTable({ head: [["Kategori", "Username", "Password"]], body: rows, startY: 30 });
+            doc.save('backup_akun.pdf');
+            showToast("Berhasil export ke PDF", "success");
+        });
+
+        const btnImportJson = document.getElementById('btn-import-json');
+        const importJsonFile = document.getElementById('import-json-file');
+
+        btnImportJson.addEventListener('click', () => importJsonFile.click());
+
+        importJsonFile.addEventListener('change', async (event) => {
+            const file = event.target.files[0];
+            if (!file || !currentUser) return;
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (!Array.isArray(imported)) return showToast("Format JSON salah", "error");
+                    const accountsRef = ref(db, `users/${currentUser.uid}/capcut_accounts`);
+                    for (const acc of imported) {
+                        if (acc.username && acc.password && acc.category) {
+                            await set(push(accountsRef), {
+                                username: acc.username,
+                                password: acc.password,
+                                category: acc.category,
+                                createdAt: acc.createdAt || new Date().toISOString()
+                            });
+                        }
+                    }
+                    showToast("Berhasil memulihkan data!", "success");
+                    importJsonFile.value = '';
+                } catch (err) {
+                    showToast("Gagal membaca file JSON", "error");
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        startApp();
+    </script>
+</body>
+</html>
