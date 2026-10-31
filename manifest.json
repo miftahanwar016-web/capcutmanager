@@ -1,0 +1,21 @@
+{
+  "name": "AkunKu Account Manager",
+  "short_name": "AkunKu",
+  "description": "Manajer Akun CapCut yang aman dan cepat.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0a1128",
+  "theme_color": "#00e5ff",
+  "icons": [
+    {
+      "src": "assets/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
