@@ -4,10 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CapCut Account Manager</title>
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0a1128">
+    <link rel="apple-touch-icon" href="assets/icon-192x192.png">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    
+    <!-- Tambahan PWA & SEO -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0a1128">
+    <meta name="description" content="AkunKu - Manajer Akun Web yang Aman dan Cepat">
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
@@ -120,9 +132,48 @@
 
         .glow-orb { position: absolute; border-radius: 50%; filter: blur(90px); z-index: -1; pointer-events: none; }
         .nav-btn.active-nav i, .nav-btn.active-nav span { color: var(--neon-secondary) !important; }
+
+        /* LOADING SCREEN STYLES */
+        #loader-wrapper {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-main);
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(0, 229, 255, 0.1) 0%, transparent 50%);
+            z-index: 99999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s;
+        }
+        .loader-hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .loader-spinner {
+            width: 60px; height: 60px;
+            border: 4px solid rgba(0, 229, 255, 0.1);
+            border-top-color: var(--neon-secondary);
+            border-right-color: var(--neon-primary);
+            border-radius: 50%;
+            animation: loader-spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes loader-spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
+
+    <!-- LOADING SCREEN -->
+    <div id="loader-wrapper">
+        <div class="loader-spinner"></div>
+        <div class="flex items-center gap-2 mb-2">
+            <div class="w-8 h-8 rounded-lg glass-card flex items-center justify-center border-cyan-500/30 shadow-[0_0_15px_rgba(0,229,255,0.2)]">
+                <i class="ph-fill ph-lock-key text-xl text-cyan-400"></i>
+            </div>
+            <h2 class="font-bold text-2xl text-white tracking-wide">Akun<span class="text-cyan-400">Ku</span></h2>
+        </div>
+        <p class="text-slate-400 text-xs font-semibold tracking-widest uppercase animate-pulse">Menyiapkan Brankas...</p>
+    </div>
 
     <div id="toast-container"></div>
 
@@ -179,8 +230,8 @@
             <!-- TAB: Dashboard -->
             <div id="view-dashboard" class="view-section space-y-6">
                 <div class="input-icon-wrapper mb-4">
-                    <i class="ph ph-magnifying-glass input-icon text-sm"></i>
-                    <input type="text" id="search-input" placeholder="Cari akun, kategori, atau username..." class="neon-input glass-panel border-none shadow-none py-3 text-sm">
+                    <i class="ph ph-magnifying-glass input-icon text-sm" aria-hidden="true"></i>
+                    <input type="text" id="search-input" aria-label="Cari akun" placeholder="Cari akun, kategori, atau username..." class="neon-input glass-panel border-none shadow-none py-3 text-sm">
                 </div>
 
                 <div>
@@ -245,8 +296,10 @@
                             <label class="block text-sm font-medium text-slate-300 ml-1">Kategori</label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <i class="ph ph-tag text-slate-400 text-lg"></i>
+                                    <i class="ph ph-at text-slate-400 text-lg" aria-hidden="true"></i>
                                 </div>
+                                <input type="text" id="acc-username" aria-label="Username atau Email" required placeholder="Contoh: user@email.com" class="w-full bg-black/30 text-white border border-white/5 rounded-2xl py-4 pl-12 pr-4 focus:outline-none focus:ring-1 focus:ring-cyan-500 shadow-inner">
+                            </div>
                                 <select id="acc-category" class="w-full bg-black/30 text-white border border-white/5 rounded-2xl py-4 pl-12 pr-4 appearance-none focus:outline-none focus:ring-1 focus:ring-cyan-500 transition-all shadow-inner" required>
                                     <option value="" disabled selected class="text-slate-500">Pilih Kategori...</option>
                                     <option value="baru">Akun Baru</option>
@@ -260,8 +313,10 @@
                             <label class="block text-sm font-medium text-slate-300 ml-1">Username / Email</label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <i class="ph ph-at text-slate-400 text-lg"></i>
+                                    <i class="ph ph-key text-slate-400 text-lg" aria-hidden="true"></i>
                                 </div>
+                                <input type="password" id="acc-password" aria-label="Password Akun" required placeholder="Masukkan password" class="w-full bg-black/30 text-white border border-white/5 rounded-2xl py-4 pl-12 pr-4 focus:outline-none focus:ring-1 focus:ring-cyan-500 shadow-inner">
+                            </div>
                                 <input type="text" id="acc-username" required placeholder="Contoh: user@email.com" class="w-full bg-black/30 text-white border border-white/5 rounded-2xl py-4 pl-12 pr-4 focus:outline-none focus:ring-1 focus:ring-cyan-500 shadow-inner">
                             </div>
                         </div>
@@ -356,19 +411,19 @@
 
     <!-- NAVIGASI MOBILE BAWAH -->
     <nav class="md:hidden fixed bottom-0 left-0 w-full h-[72px] bg-[#0d1533]/90 backdrop-blur-xl border-t border-white/10 flex justify-around items-center px-4 z-50 rounded-t-3xl pb-1">
-        <button onclick="switchTab('dashboard')" class="nav-btn active-nav flex flex-col items-center gap-1 min-w-[64px]" data-target="dashboard">
-            <i class="ph-fill ph-house text-2xl text-slate-500"></i>
+        <button onclick="switchTab('dashboard')" class="nav-btn active-nav flex flex-col items-center gap-1 min-w-[64px]" data-target="dashboard" aria-label="Buka Beranda">
+            <i class="ph-fill ph-house text-2xl text-slate-500" aria-hidden="true"></i>
             <span class="text-[10px] font-semibold text-slate-500">Beranda</span>
         </button>
 
         <div class="relative -top-6">
-            <button onclick="switchTab('add')" class="nav-btn flex flex-col items-center justify-center w-14 h-14 bg-cyan-500 rounded-full text-[#0a1128] shadow-[0_8px_25px_rgba(34,211,238,0.6)] border-[6px] border-[#0a1128]" data-target="add">
-                <i class="ph-bold ph-plus text-2xl"></i>
+            <button onclick="switchTab('add')" class="nav-btn flex flex-col items-center justify-center w-14 h-14 bg-cyan-500 rounded-full text-[#0a1128] shadow-[0_8px_25px_rgba(34,211,238,0.6)] border-[6px] border-[#0a1128]" data-target="add" aria-label="Buka Tambah Akun">
+                <i class="ph-bold ph-plus text-2xl" aria-hidden="true"></i>
             </button>
         </div>
 
-        <button onclick="switchTab('settings')" class="nav-btn flex flex-col items-center gap-1 min-w-[64px]" data-target="settings">
-            <i class="ph-fill ph-gear text-2xl text-slate-500"></i>
+        <button onclick="switchTab('settings')" class="nav-btn flex flex-col items-center gap-1 min-w-[64px]" data-target="settings" aria-label="Buka Pengaturan">
+            <i class="ph-fill ph-gear text-2xl text-slate-500" aria-hidden="true"></i>
             <span class="text-[10px] font-semibold text-slate-500">Pengaturan</span>
         </button>
     </nav>
@@ -418,9 +473,20 @@
                 const userCredential = await signInAnonymously(auth);
                 currentUser = userCredential.user;
                 setupRealtimeListener();
+                
+                // Menghilangkan loading screen dengan mulus setelah koneksi berhasil
+                setTimeout(() => {
+                    document.getElementById('loader-wrapper').classList.add('loader-hidden');
+                }, 1000); // Waktu jeda 1 detik agar animasi tampil sempurna
+                
             } catch (error) {
                 console.error("Connection Error:", error);
                 showToast("Gagal terhubung ke database.", "error");
+                
+                // Tetap sembunyikan loading jika error agar user bisa melihat pesan error
+                setTimeout(() => {
+                    document.getElementById('loader-wrapper').classList.add('loader-hidden');
+                }, 1000);
             }
         }
 
@@ -617,7 +683,7 @@
                 else if (account.category === 'baru') { accentColor = 'text-yellow-400'; bgAccent = 'bg-yellow-500/20'; }
 
                 card.innerHTML = `
-                    <button onclick="deleteAccount('${account.id}')" class="absolute top-3 right-3 w-7 h-7 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 hover:bg-red-500 hover:text-white transition-colors opacity-100 md:opacity-0 md:group-hover:opacity-100 z-10">
+                    <button onclick="deleteAccount('${account.id}')" aria-label="Hapus Akun" class="absolute top-3 right-3 w-7 h-7 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 hover:bg-red-500 hover:text-white transition-colors opacity-100 md:opacity-0 md:group-hover:opacity-100 z-10">
                         <i class="ph ph-trash text-sm"></i>
                     </button>
                     <div class="flex items-center gap-3 border-b border-white/10 pb-2 pr-8">
@@ -628,7 +694,7 @@
                             <p class="font-bold text-white truncate text-sm leading-tight">${account.username.split('@')[0]}</p>
                             <div class="flex items-center gap-1.5 mt-0.5">
                                 <p class="text-[9px] font-medium text-slate-400 uppercase tracking-wider truncate">${account.username}</p>
-                                <button onclick="copyToClipboard('${account.username.replace(/'/g, "\\'")}')" class="text-slate-500 hover:text-cyan-400 transition-colors outline-none" title="Salin Username/Email">
+                                <button onclick="copyToClipboard('${account.username.replace(/'/g, "\\'")}')" aria-label="Salin Username atau Email" class="text-slate-500 hover:text-cyan-400 transition-colors outline-none" title="Salin Username/Email">
                                     <i class="ph-bold ph-copy text-[11px]"></i>
                                 </button>
                             </div>
@@ -637,11 +703,11 @@
                     <div class="flex justify-between items-center pt-1">
                         <div class="flex-1 overflow-hidden pr-2 flex items-center gap-2">
                             <p class="font-mono text-base text-slate-300 truncate translate-y-0.5 password-display">••••••••••</p>
-                            <button onclick="togglePassword(this, '${account.password.replace(/'/g, "\\'")}')" class="text-slate-400 hover:text-cyan-400 p-1">
+                            <button onclick="togglePassword(this, '${account.password.replace(/'/g, "\\'")}')" aria-label="Tampilkan Password" class="text-slate-400 hover:text-cyan-400 p-1">
                                 <i class="ph ph-eye text-lg"></i>
                             </button>
                         </div>
-                        <button onclick="copyToClipboard('${account.password.replace(/'/g, "\\'")}')" class="px-2 py-1.5 text-xs font-semibold text-cyan-400 bg-cyan-500/10 rounded-md border border-cyan-500/20 flex items-center gap-1">
+                        <button onclick="copyToClipboard('${account.password.replace(/'/g, "\\'")}')" aria-label="Salin Password" class="px-2 py-1.5 text-xs font-semibold text-cyan-400 bg-cyan-500/10 rounded-md border border-cyan-500/20 flex items-center gap-1">
                             <i class="ph-bold ph-copy text-xs"></i> Salin
                         </button>
                     </div>
