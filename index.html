@@ -546,7 +546,14 @@
             onValue(accountsRef, (snapshot) => {
                 accountsData = [];
                 snapshot.forEach((childSnapshot) => {
-                    accountsData.push({ id: childSnapshot.key, ...childSnapshot.val() });
+                    let data = childSnapshot.val();
+                    
+                    // PENYELAMATAN DATA LAMA: Jika data lama tidak punya region/kategori, 
+                    // otomatis masuk ke US dan Akun Baru agar tidak hilang.
+                    if (!data.region) data.region = 'US';
+                    if (!data.category) data.category = 'baru';
+                    
+                    accountsData.push({ id: childSnapshot.key, ...data });
                 });
                 renderAllViews();
             }, (error) => {
@@ -627,8 +634,8 @@
 
             document.getElementById('acc-username').value = account.username;
             document.getElementById('acc-password').value = account.password;
-            document.getElementById('acc-category').value = account.category;
-            document.getElementById('acc-region').value = account.region || 'ID';
+            document.getElementById('acc-category').value = account.category || 'baru';
+            document.getElementById('acc-region').value = account.region || 'US';
             document.getElementById('acc-notes').value = account.notes || '';
             document.getElementById('edit-account-id').value = docId;
 
@@ -891,6 +898,16 @@
                             <div class="flex items-center gap-1.5 mt-0.5">
                                 <p class="text-[9px] font-medium text-slate-400 uppercase tracking-wider truncate">${account.username}</p>
                                 <button onclick="copyToClipboard('${account.username.replace(/'/g, "\\'")}')" aria-label="Salin Username atau Email" class="text-slate-500 hover:text-cyan-400 transition-colors outline-none shrink-0" title="Salin Username/Email">
+                                    <i class="ph-bold ph-copy text-xs"></i>
+                                </button>
+                            </div>
+                            ${account.notes ? `<p class="text-[10px] text-cyan-400 mt-1 truncate font-medium"><i class="ph-fill ph-note-pencil"></i> ${account.notes}</p>` : ''}
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center pt-1">
+                        <div class="flex-1 overflow-hidden pr-2 flex items-center gap-2">
+                            <p class="font-mono text-base text-slate-300 truncate translate-y-0.5 password-display">••••••••••</p>
+                            <button onclick="togglePassword(this, '${account.password.replace(/'/g, "\\'")}')" class="text-slate-400 hover:text-cyan-400 p-1">
                                 <i class="ph ph-eye text-lg"></i>
                             </button>
                         </div>
@@ -926,7 +943,7 @@
             let csvContent = "Kategori,Region,Username/Email,Password,Catatan\n";
             accountsData.forEach(acc => {
                 const esc = (s) => '"' + (s ? String(s).replace(/"/g, '""') : '') + '"';
-                csvContent += [esc(acc.category), esc(acc.region || 'ID'), esc(acc.username), esc(acc.password), esc(acc.notes || '')].join(',') + "\n";
+                csvContent += [esc(acc.category), esc(acc.region || 'US'), esc(acc.username), esc(acc.password), esc(acc.notes || '')].join(',') + "\n";
             });
             downloadFile("\uFEFF" + csvContent, 'backup_akun.csv', 'text/csv;charset=utf-8;');
             showToast("Berhasil export ke CSV", "success");
@@ -937,7 +954,7 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             doc.setFontSize(16); doc.text("Backup Data Akun - AkunKu", 14, 20);
-            const rows = accountsData.map(acc => [acc.category.toUpperCase(), (acc.region || 'ID').toUpperCase(), acc.username, acc.password, acc.notes || '-']);
+            const rows = accountsData.map(acc => [acc.category.toUpperCase(), (acc.region || 'US').toUpperCase(), acc.username, acc.password, acc.notes || '-']);
             doc.autoTable({ head: [["Kategori", "Region", "Username", "Password", "Catatan"]], body: rows, startY: 30 });
             doc.save('backup_akun.pdf');
             showToast("Berhasil export ke PDF", "success");
