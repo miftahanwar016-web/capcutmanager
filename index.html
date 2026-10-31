@@ -235,38 +235,64 @@
                 </div>
 
                 <div>
-                    <h3 class="text-base font-semibold text-slate-300 mb-3">Kategori Folder</h3>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-                        <div id="folder-all" onclick="selectFolder('all')" class="folder-card cursor-pointer glass-card p-3 md:p-4 flex flex-col gap-2 transition-all hover:bg-white/5">
+                    <h3 class="text-base font-semibold text-slate-300 mb-3" id="folder-header-title">Pilih Wilayah (Region)</h3>
+                    
+                    <!-- FOLDER TINGKAT 1: REGION -->
+                    <div id="region-folders" class="grid grid-cols-2 gap-3 md:gap-4">
+                        <div id="folder-id" onclick="selectRegionFolder('ID')" class="folder-card cursor-pointer glass-card p-4 flex flex-col gap-2 transition-all hover:bg-white/5">
                             <div class="flex justify-between items-start">
-                                <i class="ph-fill ph-folder text-2xl text-cyan-400"></i>
-                                <span id="count-all" class="text-xs font-bold bg-white/10 text-slate-300 px-2 py-0.5 rounded-md">0</span>
+                                <i class="ph-fill ph-flag text-3xl text-red-400"></i>
+                                <span id="count-id" class="text-xs font-bold bg-white/10 text-slate-300 px-2 py-0.5 rounded-md">0</span>
                             </div>
-                            <div><h4 class="text-sm font-semibold text-white tracking-wide">Semua Akun</h4></div>
+                            <div><h4 class="text-base font-semibold text-white tracking-wide">Indonesia 🇮🇩</h4></div>
                         </div>
 
-                        <div id="folder-baru" onclick="selectFolder('baru')" class="folder-card cursor-pointer glass-card p-3 md:p-4 flex flex-col gap-2 transition-all hover:bg-white/5">
+                        <div id="folder-us" onclick="selectRegionFolder('US')" class="folder-card cursor-pointer glass-card p-4 flex flex-col gap-2 transition-all hover:bg-white/5">
                             <div class="flex justify-between items-start">
-                                <i class="ph-fill ph-folder text-2xl text-cyan-500"></i>
-                                <span id="count-baru" class="text-xs font-bold bg-white/10 text-slate-300 px-2 py-0.5 rounded-md">0</span>
+                                <i class="ph-fill ph-flag text-3xl text-blue-400"></i>
+                                <span id="count-us" class="text-xs font-bold bg-white/10 text-slate-300 px-2 py-0.5 rounded-md">0</span>
                             </div>
-                            <div><h4 class="text-sm font-semibold text-white tracking-wide">Akun Baru</h4></div>
+                            <div><h4 class="text-base font-semibold text-white tracking-wide">United States 🇺🇸</h4></div>
                         </div>
+                    </div>
 
-                        <div id="folder-budy" onclick="selectFolder('budy')" class="folder-card cursor-pointer glass-card p-3 md:p-4 flex flex-col gap-2 transition-all hover:bg-white/5">
-                            <div class="flex justify-between items-start">
-                                <i class="ph-fill ph-folder text-2xl text-cyan-500"></i>
-                                <span id="count-budy" class="text-xs font-bold bg-white/10 text-slate-300 px-2 py-0.5 rounded-md">0</span>
+                    <!-- FOLDER TINGKAT 2: KATEGORI -->
+                    <div id="category-folders" class="hidden">
+                        <button onclick="backToRegionFolders()" class="mb-3 text-xs md:text-sm font-semibold text-cyan-400 flex items-center gap-1 hover:text-cyan-300 transition-colors bg-cyan-500/10 px-3 py-1.5 rounded-lg w-max">
+                            <i class="ph-bold ph-arrow-left"></i> Kembali ke Wilayah
+                        </button>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+                            <div id="folder-cat-all" onclick="selectCategoryFolder('all')" class="folder-card cat-folder cursor-pointer glass-card p-3 md:p-4 flex flex-col gap-2 transition-all hover:bg-white/5">
+                                <div class="flex justify-between items-start">
+                                    <i class="ph-fill ph-folders text-2xl text-cyan-400"></i>
+                                    <span id="count-cat-all" class="text-xs font-bold bg-white/10 text-slate-300 px-2 py-0.5 rounded-md">0</span>
+                                </div>
+                                <div><h4 class="text-sm font-semibold text-white tracking-wide">Semua Akun</h4></div>
                             </div>
-                            <div><h4 class="text-sm font-semibold text-white tracking-wide">Akun Budy</h4></div>
-                        </div>
 
-                        <div id="folder-partner" onclick="selectFolder('partner')" class="folder-card cursor-pointer glass-card p-3 md:p-4 flex flex-col gap-2 transition-all hover:bg-white/5">
-                            <div class="flex justify-between items-start">
-                                <i class="ph-fill ph-folder text-2xl text-cyan-500"></i>
-                                <span id="count-partner" class="text-xs font-bold bg-white/10 text-slate-300 px-2 py-0.5 rounded-md">0</span>
+                            <div id="folder-cat-baru" onclick="selectCategoryFolder('baru')" class="folder-card cat-folder cursor-pointer glass-card p-3 md:p-4 flex flex-col gap-2 transition-all hover:bg-white/5">
+                                <div class="flex justify-between items-start">
+                                    <i class="ph-fill ph-folder text-2xl text-yellow-400"></i>
+                                    <span id="count-cat-baru" class="text-xs font-bold bg-white/10 text-slate-300 px-2 py-0.5 rounded-md">0</span>
+                                </div>
+                                <div><h4 class="text-sm font-semibold text-white tracking-wide">Akun Baru</h4></div>
                             </div>
-                            <div><h4 class="text-sm font-semibold text-white tracking-wide">Akun Partner</h4></div>
+
+                            <div id="folder-cat-budy" onclick="selectCategoryFolder('budy')" class="folder-card cat-folder cursor-pointer glass-card p-3 md:p-4 flex flex-col gap-2 transition-all hover:bg-white/5">
+                                <div class="flex justify-between items-start">
+                                    <i class="ph-fill ph-folder text-2xl text-purple-400"></i>
+                                    <span id="count-cat-budy" class="text-xs font-bold bg-white/10 text-slate-300 px-2 py-0.5 rounded-md">0</span>
+                                </div>
+                                <div><h4 class="text-sm font-semibold text-white tracking-wide">Akun Budy</h4></div>
+                            </div>
+
+                            <div id="folder-cat-partner" onclick="selectCategoryFolder('partner')" class="folder-card cat-folder cursor-pointer glass-card p-3 md:p-4 flex flex-col gap-2 transition-all hover:bg-white/5">
+                                <div class="flex justify-between items-start">
+                                    <i class="ph-fill ph-folder text-2xl text-green-400"></i>
+                                    <span id="count-cat-partner" class="text-xs font-bold bg-white/10 text-slate-300 px-2 py-0.5 rounded-md">0</span>
+                                </div>
+                                <div><h4 class="text-sm font-semibold text-white tracking-wide">Akun Partner</h4></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -288,7 +314,7 @@
                         <div class="w-8 h-8 rounded-full bg-cyan-400 flex items-center justify-center">
                             <i class="ph-bold ph-plus text-[#0a1128] text-lg"></i>
                         </div>
-                        <h3 class="text-2xl font-bold text-white tracking-wide">Tambah Akun</h3>
+                        <h3 id="form-title" class="text-2xl font-bold text-white tracking-wide">Tambah Akun</h3>
                     </div>
                     
                     <form id="add-account-form" class="space-y-6">
@@ -303,6 +329,20 @@
                                     <option value="baru">Akun Baru</option>
                                     <option value="budy">Akun Budy</option>
                                     <option value="partner">Akun Partner</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-slate-300 ml-1">Region / Wilayah</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <i class="ph ph-globe text-slate-400 text-lg" aria-hidden="true"></i>
+                                </div>
+                                <select id="acc-region" aria-label="Pilih Region" class="w-full bg-black/30 text-white border border-white/5 rounded-2xl py-4 pl-12 pr-4 appearance-none focus:outline-none focus:ring-1 focus:ring-cyan-500 transition-all shadow-inner" required>
+                                    <option value="" disabled selected class="text-slate-500">Pilih Negara...</option>
+                                    <option value="ID">🇮🇩 Indonesia</option>
+                                    <option value="US">🇺🇸 United States (US)</option>
                                 </select>
                             </div>
                         </div>
@@ -326,6 +366,18 @@
                                 <input type="text" id="acc-password" aria-label="Password Akun" required placeholder="Masukkan password" class="w-full bg-black/30 text-white border border-white/5 rounded-2xl py-4 pl-12 pr-4 focus:outline-none focus:ring-1 focus:ring-cyan-500 shadow-inner">
                             </div>
                         </div>
+
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-slate-300 ml-1">Catatan Tambahan (Opsional)</label>
+                            <div class="relative">
+                                <div class="absolute top-4 left-0 pl-4 flex items-start pointer-events-none">
+                                    <i class="ph ph-note-pencil text-slate-400 text-lg" aria-hidden="true"></i>
+                                </div>
+                                <textarea id="acc-notes" aria-label="Catatan Tambahan" rows="2" placeholder="Contoh: Nomor pemulihan, dll" class="w-full bg-black/30 text-white border border-white/5 rounded-2xl py-4 pl-12 pr-4 focus:outline-none focus:ring-1 focus:ring-cyan-500 shadow-inner resize-none"></textarea>
+                            </div>
+                        </div>
+
+                        <input type="hidden" id="edit-account-id">
 
                         <div class="pt-6 relative z-30">
                             <button type="button" id="btn-simpan" class="w-full bg-cyan-500 hover:bg-cyan-400 text-[#0a1128] font-bold text-lg rounded-2xl py-4 transition-all shadow-[0_0_15px_rgba(34,211,238,0.4)] flex items-center justify-center gap-2 cursor-pointer">
@@ -429,7 +481,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getDatabase, ref, push, set, onValue, remove } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+        import { getDatabase, ref, push, set, onValue, remove, update } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAfeS-CfSNi5GXOTCy2yTu0frn3VEP2QRE",
@@ -449,7 +501,8 @@
 
         let currentUser = null;
         let accountsData = [];
-        let currentFilter = 'none';
+        let selectedRegion = null;
+        let selectedCategory = 'all';
         let searchQuery = '';
 
         window.showToast = (message, type = 'info') => {
@@ -508,13 +561,16 @@
                 return;
             }
 
-            const username = document.getElementById('acc-username').value;
-            const password = document.getElementById('acc-password').value;
+            const username = document.getElementById('acc-username').value.trim();
+            const password = document.getElementById('acc-password').value.trim();
             const category = document.getElementById('acc-category').value;
+            const region = document.getElementById('acc-region').value;
+            const notes = document.getElementById('acc-notes').value.trim();
+            const editId = document.getElementById('edit-account-id').value;
             const btn = document.getElementById('btn-simpan');
 
-            if(!username || !password || !category) {
-                showToast("Mohon lengkapi semua data", "error");
+            if(!username || !password || !category || !region) {
+                showToast("Mohon lengkapi semua data wajib", "error");
                 return;
             }
 
@@ -522,24 +578,39 @@
             btn.innerHTML = `<i class="ph ph-spinner animate-spin text-xl"></i> Menyimpan...`;
 
             try {
-                const accountsRef = ref(db, `users/${currentUser.uid}/capcut_accounts`);
-                const newDocRef = push(accountsRef);
-                await set(newDocRef, {
-                    username: username,
-                    password: password,
-                    category: category,
-                    createdAt: new Date().toISOString()
-                });
+                if (editId) {
+                    // Update data
+                    const docRef = ref(db, `users/${currentUser.uid}/capcut_accounts/${editId}`);
+                    await update(docRef, {
+                        username: username,
+                        password: password,
+                        category: category,
+                        region: region,
+                        notes: notes,
+                        updatedAt: new Date().toISOString()
+                    });
+                    showToast("Akun berhasil diupdate!", "success");
+                } else {
+                    // Simpan data baru
+                    const accountsRef = ref(db, `users/${currentUser.uid}/capcut_accounts`);
+                    const newDocRef = push(accountsRef);
+                    await set(newDocRef, {
+                        username: username,
+                        password: password,
+                        category: category,
+                        region: region,
+                        notes: notes,
+                        createdAt: new Date().toISOString()
+                    });
+                    showToast("Akun berhasil disimpan!", "success");
+                }
 
-                showToast("Akun berhasil disimpan!", "success");
                 document.getElementById('add-account-form').reset();
+                document.getElementById('edit-account-id').value = "";
+                document.getElementById('form-title').innerText = "Tambah Akun";
                 
-                // Jangan otomatis buka folder, kembali ke tampilan kosong yang rapih
-                currentFilter = 'none';
-                document.querySelectorAll('.folder-card').forEach(el => {
-                    el.classList.remove('active-folder');
-                    el.querySelector('i').classList.replace('ph-folder-open', 'ph-folder');
-                });
+                // Kembali ke tampilan Root Folder (Wilayah) saat selesai simpan
+                backToRegionFolders();
                 
                 switchTab('dashboard');
             } catch (error) {
@@ -549,6 +620,23 @@
                 btn.innerHTML = `Simpan Akun`;
             }
         });
+
+        window.editAccount = (docId) => {
+            const account = accountsData.find(a => a.id === docId);
+            if (!account) return;
+
+            document.getElementById('acc-username').value = account.username;
+            document.getElementById('acc-password').value = account.password;
+            document.getElementById('acc-category').value = account.category;
+            document.getElementById('acc-region').value = account.region || 'ID';
+            document.getElementById('acc-notes').value = account.notes || '';
+            document.getElementById('edit-account-id').value = docId;
+
+            document.getElementById('form-title').innerText = "Edit Akun";
+            document.getElementById('btn-simpan').innerHTML = "Update Akun";
+
+            switchTab('add');
+        }
 
         window.deleteAccount = async (docId) => {
             if (!currentUser) return;
@@ -606,6 +694,18 @@
             
             document.querySelectorAll(`.nav-btn[data-target="${tabName}"]`).forEach(el => el.classList.add('active-nav'));
 
+            // Reset form jika berpindah tab
+            if (tabName === 'add' && !document.getElementById('edit-account-id').value) {
+                document.getElementById('form-title').innerText = "Tambah Akun";
+                document.getElementById('btn-simpan').innerHTML = "Simpan Akun";
+                document.getElementById('add-account-form').reset();
+            } else if (tabName !== 'add') {
+                document.getElementById('edit-account-id').value = "";
+                document.getElementById('form-title').innerText = "Tambah Akun";
+                document.getElementById('btn-simpan').innerHTML = "Simpan Akun";
+                document.getElementById('add-account-form').reset();
+            }
+
             const titles = { 'dashboard': 'Selamat datang! 👋', 'add': 'Tambah Akun', 'settings': 'Pengaturan Sistem' };
             const pageTitleEl = document.getElementById('page-title');
             if(pageTitleEl) pageTitleEl.innerText = titles[tabName] || '';
@@ -613,34 +713,93 @@
             if(tabName === 'dashboard') renderAllViews();
         };
 
-        window.selectFolder = (folderId) => {
-            currentFilter = folderId;
-            document.querySelectorAll('.folder-card').forEach(el => {
-                el.classList.remove('active-folder');
-                const icon = el.querySelector('i');
-                icon.classList.replace('ph-folder-open', 'ph-folder');
-            });
+        window.selectRegionFolder = (region) => {
+            selectedRegion = region;
+            selectedCategory = 'all';
             
-            const activeFolderEl = document.getElementById(`folder-${folderId}`);
+            // Menyembunyikan menu Region, lalu memunculkan menu Kategori
+            document.getElementById('region-folders').classList.add('hidden');
+            document.getElementById('category-folders').classList.remove('hidden');
+            document.getElementById('folder-header-title').innerText = region === 'US' ? 'Kategori - Akun US 🇺🇸' : 'Kategori - Akun Indonesia 🇮🇩';
+            
+            // Atur folder "Semua Akun" agar langsung aktif/terpilih
+            document.querySelectorAll('.cat-folder').forEach(el => {
+                el.classList.remove('active-folder');
+                el.querySelector('i').classList.replace('ph-folder-open', 'ph-folder');
+                el.querySelector('i').classList.replace('ph-folders-open', 'ph-folders');
+            });
+            const activeFolderEl = document.getElementById(`folder-cat-all`);
             if (activeFolderEl) {
                 activeFolderEl.classList.add('active-folder');
-                activeFolderEl.querySelector('i').classList.replace('ph-folder', 'ph-folder-open');
+                activeFolderEl.querySelector('i').classList.replace('ph-folders', 'ph-folders-open');
+            }
+            
+            renderAllViews();
+        }
+
+        window.selectCategoryFolder = (category) => {
+            selectedCategory = category;
+            
+            document.querySelectorAll('.cat-folder').forEach(el => {
+                el.classList.remove('active-folder');
+                if(el.id === 'folder-cat-all') {
+                    el.querySelector('i').classList.replace('ph-folders-open', 'ph-folders');
+                } else {
+                    el.querySelector('i').classList.replace('ph-folder-open', 'ph-folder');
+                }
+            });
+            
+            const activeFolderEl = document.getElementById(`folder-cat-${category}`);
+            if (activeFolderEl) {
+                activeFolderEl.classList.add('active-folder');
+                if(category === 'all') {
+                    activeFolderEl.querySelector('i').classList.replace('ph-folders', 'ph-folders-open');
+                } else {
+                    activeFolderEl.querySelector('i').classList.replace('ph-folder', 'ph-folder-open');
+                }
             }
 
             renderDashboardList();
         }
 
-        function renderAllViews() {
-            const counts = {
-                'all': accountsData.length,
-                'baru': accountsData.filter(a => a.category === 'baru').length,
-                'budy': accountsData.filter(a => a.category === 'budy').length,
-                'partner': accountsData.filter(a => a.category === 'partner').length
-            };
+        window.backToRegionFolders = () => {
+            selectedRegion = null;
+            selectedCategory = 'all';
+            
+            document.getElementById('region-folders').classList.remove('hidden');
+            document.getElementById('category-folders').classList.add('hidden');
+            document.getElementById('folder-header-title').innerText = 'Pilih Wilayah (Region)';
+            
+            renderAllViews();
+        }
 
-            for (const [key, value] of Object.entries(counts)) {
-                const countEl = document.getElementById(`count-${key}`);
-                if (countEl) countEl.innerText = value;
+        function renderAllViews() {
+            // Perbarui jumlah akun di Folder Region
+            const countId = accountsData.filter(a => a.region === 'ID').length;
+            const countUs = accountsData.filter(a => a.region === 'US').length;
+            
+            const countIdEl = document.getElementById('count-id');
+            if (countIdEl) countIdEl.innerText = countId;
+            const countUsEl = document.getElementById('count-us');
+            if (countUsEl) countUsEl.innerText = countUs;
+
+            // Perbarui jumlah akun di Folder Kategori (Berdasarkan Wilayah Aktif)
+            if (selectedRegion) {
+                const regionalData = accountsData.filter(a => a.region === selectedRegion);
+                
+                const countCatAll = regionalData.length;
+                const countCatBaru = regionalData.filter(a => a.category === 'baru').length;
+                const countCatBudy = regionalData.filter(a => a.category === 'budy').length;
+                const countCatPartner = regionalData.filter(a => a.category === 'partner').length;
+
+                const countCatAllEl = document.getElementById('count-cat-all');
+                if (countCatAllEl) countCatAllEl.innerText = countCatAll;
+                const countCatBaruEl = document.getElementById('count-cat-baru');
+                if (countCatBaruEl) countCatBaruEl.innerText = countCatBaru;
+                const countCatBudyEl = document.getElementById('count-cat-budy');
+                if (countCatBudyEl) countCatBudyEl.innerText = countCatBudy;
+                const countCatPartnerEl = document.getElementById('count-cat-partner');
+                if (countCatPartnerEl) countCatPartnerEl.innerText = countCatPartner;
             }
 
             renderDashboardList();
@@ -657,21 +816,29 @@
             if (searchQuery) {
                 filteredData = filteredData.filter(a => 
                     (a.username && a.username.toLowerCase().includes(searchQuery)) ||
-                    (a.category && a.category.toLowerCase().includes(searchQuery))
+                    (a.category && a.category.toLowerCase().includes(searchQuery)) ||
+                    (a.notes && a.notes.toLowerCase().includes(searchQuery))
                 );
                 document.getElementById('list-title').innerText = "Hasil Pencarian";
                 emptyText.innerText = "Akun tidak ditemukan.";
             } else {
-                if (currentFilter === 'none') {
+                if (!selectedRegion) {
                     filteredData = [];
-                    document.getElementById('list-title').innerText = "Pilih Kategori Folder";
-                    emptyText.innerText = "Silakan klik salah satu folder di atas untuk melihat daftar akun.";
+                    document.getElementById('list-title').innerText = "Pilih Wilayah Terlebih Dahulu";
+                    emptyText.innerText = "Silakan klik folder wilayah (US/Indonesia) di atas untuk melihat akun.";
                 } else {
-                    if (currentFilter !== 'all') {
-                        filteredData = filteredData.filter(a => a.category === currentFilter);
+                    // Filter berdasarkan Wilayah
+                    filteredData = filteredData.filter(a => a.region === selectedRegion);
+                    
+                    // Filter berdasarkan Kategori
+                    if (selectedCategory !== 'all') {
+                        filteredData = filteredData.filter(a => a.category === selectedCategory);
                     }
-                    const folderNames = { 'all': 'Semua Akun', 'baru': 'Akun Baru', 'budy': 'Akun Budy', 'partner': 'Akun Partner' };
-                    document.getElementById('list-title').innerText = folderNames[currentFilter];
+                    
+                    const regionName = selectedRegion === 'US' ? 'US 🇺🇸' : 'Indonesia 🇮🇩';
+                    const catNames = { 'all': 'Semua Akun', 'baru': 'Akun Baru', 'budy': 'Akun Budy', 'partner': 'Akun Partner' };
+                    
+                    document.getElementById('list-title').innerText = `Akun ${regionName} > ${catNames[selectedCategory]}`;
                     emptyText.innerText = "Belum ada akun di folder ini.";
                 }
             }
@@ -696,28 +863,34 @@
                 else if (account.category === 'partner') { accentColor = 'text-green-400'; bgAccent = 'bg-green-500/20'; } 
                 else if (account.category === 'baru') { accentColor = 'text-yellow-400'; bgAccent = 'bg-yellow-500/20'; }
 
+                let regionBadge = '';
+                if (account.region === 'US') {
+                    regionBadge = '<span class="bg-blue-500/20 text-blue-400 border border-blue-500/30 px-1.5 py-0.5 rounded text-[8px] font-bold ml-2 tracking-widest whitespace-nowrap" title="Akun US">🇺🇸 US</span>';
+                } else {
+                    regionBadge = '<span class="bg-red-500/20 text-red-400 border border-red-500/30 px-1.5 py-0.5 rounded text-[8px] font-bold ml-2 tracking-widest whitespace-nowrap" title="Akun Indonesia">🇮🇩 ID</span>';
+                }
+
                 card.innerHTML = `
-                    <button onclick="deleteAccount('${account.id}')" aria-label="Hapus Akun" class="absolute top-3 right-3 w-7 h-7 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 hover:bg-red-500 hover:text-white transition-colors opacity-100 md:opacity-0 md:group-hover:opacity-100 z-10">
-                        <i class="ph ph-trash text-sm"></i>
-                    </button>
-                    <div class="flex items-center gap-3 border-b border-white/10 pb-2 pr-8">
-                        <div class="w-8 h-8 rounded-lg ${bgAccent} flex items-center justify-center ${accentColor} border border-white/5">
+                    <div class="absolute top-3 right-3 flex gap-2 z-10 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                        <button onclick="editAccount('${account.id}')" aria-label="Edit Akun" class="w-7 h-7 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 hover:bg-blue-500 hover:text-white transition-colors">
+                            <i class="ph ph-pencil-simple text-sm"></i>
+                        </button>
+                        <button onclick="deleteAccount('${account.id}')" aria-label="Hapus Akun" class="w-7 h-7 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 hover:bg-red-500 hover:text-white transition-colors">
+                            <i class="ph ph-trash text-sm"></i>
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-3 border-b border-white/10 pb-2 pr-16">
+                        <div class="w-8 h-8 rounded-lg ${bgAccent} flex items-center justify-center ${accentColor} border border-white/5 shrink-0">
                             <i class="ph-fill ph-google-logo text-base"></i>
                         </div>
                         <div class="overflow-hidden flex-1">
-                            <p class="font-bold text-white truncate text-sm leading-tight">${account.username.split('@')[0]}</p>
+                            <div class="flex items-center">
+                                <p class="font-bold text-white truncate text-sm leading-tight">${account.username.split('@')[0]}</p>
+                                ${regionBadge}
+                            </div>
                             <div class="flex items-center gap-1.5 mt-0.5">
                                 <p class="text-[9px] font-medium text-slate-400 uppercase tracking-wider truncate">${account.username}</p>
-                                <button onclick="copyToClipboard('${account.username.replace(/'/g, "\\'")}')" aria-label="Salin Username atau Email" class="text-slate-500 hover:text-cyan-400 transition-colors outline-none" title="Salin Username/Email">
-                                    <i class="ph-bold ph-copy text-[11px]"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex justify-between items-center pt-1">
-                        <div class="flex-1 overflow-hidden pr-2 flex items-center gap-2">
-                            <p class="font-mono text-base text-slate-300 truncate translate-y-0.5 password-display">••••••••••</p>
-                            <button onclick="togglePassword(this, '${account.password.replace(/'/g, "\\'")}')" aria-label="Tampilkan Password" class="text-slate-400 hover:text-cyan-400 p-1">
+                                <button onclick="copyToClipboard('${account.username.replace(/'/g, "\\'")}')" aria-label="Salin Username atau Email" class="text-slate-500 hover:text-cyan-400 transition-colors outline-none shrink-0" title="Salin Username/Email">
                                 <i class="ph ph-eye text-lg"></i>
                             </button>
                         </div>
@@ -750,10 +923,10 @@
 
         document.getElementById('btn-export-csv').addEventListener('click', () => {
             if (accountsData.length === 0) return showToast("Tidak ada data", "error");
-            let csvContent = "Kategori,Username/Email,Password\n";
+            let csvContent = "Kategori,Region,Username/Email,Password,Catatan\n";
             accountsData.forEach(acc => {
                 const esc = (s) => '"' + (s ? String(s).replace(/"/g, '""') : '') + '"';
-                csvContent += [esc(acc.category), esc(acc.username), esc(acc.password)].join(',') + "\n";
+                csvContent += [esc(acc.category), esc(acc.region || 'ID'), esc(acc.username), esc(acc.password), esc(acc.notes || '')].join(',') + "\n";
             });
             downloadFile("\uFEFF" + csvContent, 'backup_akun.csv', 'text/csv;charset=utf-8;');
             showToast("Berhasil export ke CSV", "success");
@@ -764,8 +937,8 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             doc.setFontSize(16); doc.text("Backup Data Akun - AkunKu", 14, 20);
-            const rows = accountsData.map(acc => [acc.category.toUpperCase(), acc.username, acc.password]);
-            doc.autoTable({ head: [["Kategori", "Username", "Password"]], body: rows, startY: 30 });
+            const rows = accountsData.map(acc => [acc.category.toUpperCase(), (acc.region || 'ID').toUpperCase(), acc.username, acc.password, acc.notes || '-']);
+            doc.autoTable({ head: [["Kategori", "Region", "Username", "Password", "Catatan"]], body: rows, startY: 30 });
             doc.save('backup_akun.pdf');
             showToast("Berhasil export ke PDF", "success");
         });
@@ -790,6 +963,8 @@
                                 username: acc.username,
                                 password: acc.password,
                                 category: acc.category,
+                                region: acc.region || 'ID',
+                                notes: acc.notes || '',
                                 createdAt: acc.createdAt || new Date().toISOString()
                             });
                         }
