@@ -237,9 +237,9 @@
                 <div>
                     <h3 class="text-base font-semibold text-slate-300 mb-3">Kategori Folder</h3>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-                        <div id="folder-all" onclick="selectFolder('all')" class="folder-card active-folder cursor-pointer glass-card p-3 md:p-4 flex flex-col gap-2 transition-all hover:bg-white/5">
+                        <div id="folder-all" onclick="selectFolder('all')" class="folder-card cursor-pointer glass-card p-3 md:p-4 flex flex-col gap-2 transition-all hover:bg-white/5">
                             <div class="flex justify-between items-start">
-                                <i class="ph-fill ph-folder-open text-2xl text-cyan-400"></i>
+                                <i class="ph-fill ph-folder text-2xl text-cyan-400"></i>
                                 <span id="count-all" class="text-xs font-bold bg-white/10 text-slate-300 px-2 py-0.5 rounded-md">0</span>
                             </div>
                             <div><h4 class="text-sm font-semibold text-white tracking-wide">Semua Akun</h4></div>
@@ -449,7 +449,7 @@
 
         let currentUser = null;
         let accountsData = [];
-        let currentFilter = 'all';
+        let currentFilter = 'none';
         let searchQuery = '';
 
         window.showToast = (message, type = 'info') => {
@@ -533,7 +533,14 @@
 
                 showToast("Akun berhasil disimpan!", "success");
                 document.getElementById('add-account-form').reset();
-                selectFolder(category);
+                
+                // Jangan otomatis buka folder, kembali ke tampilan kosong yang rapih
+                currentFilter = 'none';
+                document.querySelectorAll('.folder-card').forEach(el => {
+                    el.classList.remove('active-folder');
+                    el.querySelector('i').classList.replace('ph-folder-open', 'ph-folder');
+                });
+                
                 switchTab('dashboard');
             } catch (error) {
                 showToast("Gagal menyimpan akun.", "error");
@@ -620,8 +627,6 @@
                 activeFolderEl.querySelector('i').classList.replace('ph-folder', 'ph-folder-open');
             }
 
-            const folderNames = { 'all': 'Semua Akun', 'baru': 'Akun Baru', 'budy': 'Akun Budy', 'partner': 'Akun Partner' };
-            document.getElementById('list-title').innerText = folderNames[folderId];
             renderDashboardList();
         }
 
@@ -644,18 +649,31 @@
         function renderDashboardList() {
             const container = document.getElementById('dashboard-account-list');
             const emptyState = document.getElementById('dashboard-empty-state');
+            const emptyText = emptyState.querySelector('p');
             if(!container || !emptyState) return;
 
             let filteredData = accountsData;
-            if (currentFilter !== 'all') {
-                filteredData = filteredData.filter(a => a.category === currentFilter);
-            }
-
+            
             if (searchQuery) {
                 filteredData = filteredData.filter(a => 
                     (a.username && a.username.toLowerCase().includes(searchQuery)) ||
                     (a.category && a.category.toLowerCase().includes(searchQuery))
                 );
+                document.getElementById('list-title').innerText = "Hasil Pencarian";
+                emptyText.innerText = "Akun tidak ditemukan.";
+            } else {
+                if (currentFilter === 'none') {
+                    filteredData = [];
+                    document.getElementById('list-title').innerText = "Pilih Kategori Folder";
+                    emptyText.innerText = "Silakan klik salah satu folder di atas untuk melihat daftar akun.";
+                } else {
+                    if (currentFilter !== 'all') {
+                        filteredData = filteredData.filter(a => a.category === currentFilter);
+                    }
+                    const folderNames = { 'all': 'Semua Akun', 'baru': 'Akun Baru', 'budy': 'Akun Budy', 'partner': 'Akun Partner' };
+                    document.getElementById('list-title').innerText = folderNames[currentFilter];
+                    emptyText.innerText = "Belum ada akun di folder ini.";
+                }
             }
 
             container.innerHTML = ''; 
