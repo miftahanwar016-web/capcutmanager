@@ -624,9 +624,14 @@
                         <div class="w-8 h-8 rounded-lg ${bgAccent} flex items-center justify-center ${accentColor} border border-white/5">
                             <i class="ph-fill ph-google-logo text-base"></i>
                         </div>
-                        <div class="overflow-hidden">
+                        <div class="overflow-hidden flex-1">
                             <p class="font-bold text-white truncate text-sm leading-tight">${account.username.split('@')[0]}</p>
-                            <p class="text-[9px] font-medium text-slate-400 uppercase tracking-wider mt-0.5 truncate">${account.username}</p>
+                            <div class="flex items-center gap-1.5 mt-0.5">
+                                <p class="text-[9px] font-medium text-slate-400 uppercase tracking-wider truncate">${account.username}</p>
+                                <button onclick="copyToClipboard('${account.username.replace(/'/g, "\\'")}')" class="text-slate-500 hover:text-cyan-400 transition-colors outline-none" title="Salin Username/Email">
+                                    <i class="ph-bold ph-copy text-[11px]"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div class="flex justify-between items-center pt-1">
